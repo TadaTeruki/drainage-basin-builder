@@ -3,13 +3,20 @@ use std::{collections::HashMap, i32};
 use worley_particle::{map::ParticleMap, Particle};
 
 #[derive(Debug, Clone, PartialEq)]
-struct Node {
+struct InternalNode {
     area: f64,
     flow_to: Particle,
 }
 
-pub fn build_drainage_area(terrain_map: &ParticleMap<f64>) -> ParticleMap<f64> {
-    let node = terrain_map
+#[derive(Debug, Clone, PartialEq)]
+pub struct Node {
+    area: f64,
+    drainage_area: f64,
+    flow_to: Particle,
+}
+
+pub fn build_drainage_basin(terrain_map: &ParticleMap<f64>) -> ParticleMap<Node> {
+    let nodes = terrain_map
         .iter()
         .map(|(&particle, elevation)| {
             let voronoi = particle.calculate_voronoi();
@@ -37,22 +44,22 @@ pub fn build_drainage_area(terrain_map: &ParticleMap<f64>) -> ParticleMap<f64> {
                 }
             }
             if let Some(flow_to) = flow_to {
-                (particle, Node { area, flow_to })
+                (particle, InternalNode { area, flow_to })
             } else {
                 (
                     particle,
-                    Node {
+                    InternalNode {
                         area,
                         flow_to: particle,
                     },
                 )
             }
         })
-        .collect::<ParticleMap<Node>>();
+        .collect::<ParticleMap<InternalNode>>();
 
     let mut parent_num = HashMap::new();
 
-    for (_, node) in node.iter() {
+    for (_, node) in nodes.iter() {
         let flow_to = node.flow_to;
         if !parent_num.contains_key(&flow_to) {
             parent_num.insert(flow_to, 1);
@@ -63,7 +70,7 @@ pub fn build_drainage_area(terrain_map: &ParticleMap<f64>) -> ParticleMap<f64> {
 
     let mut drainage_area = HashMap::new();
 
-    for (particle, node) in node.iter() {
+    for (particle, node) in nodes.iter() {
         if parent_num.contains_key(&particle) {
             continue;
         }
@@ -96,5 +103,17 @@ pub fn build_drainage_area(terrain_map: &ParticleMap<f64>) -> ParticleMap<f64> {
         }
     }
 
-    ParticleMap::new(*terrain_map.params(), drainage_area)
+    nodes
+        .iter()
+        .map(|(particle, node)| {
+            (
+                *particle,
+                Node {
+                    area: node.area,
+                    drainage_area: *drainage_area.get(particle).unwrap(),
+                    flow_to: node.flow_to,
+                },
+            )
+        })
+        .collect::<ParticleMap<Node>>()
 }
