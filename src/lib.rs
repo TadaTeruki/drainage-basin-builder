@@ -28,8 +28,8 @@ pub struct DrainageBasinNode {
 
 impl ParticleMapAttributeRW for DrainageBasinNode {
     fn from_strs(s: &[&str]) -> Result<Self, Box<dyn std::error::Error>> {
-        let particle = Particle::from_strs(s)?;
-        let flow_to = Particle::from_strs(&s[Particle::len_strs()..])?;
+        let particle = Particle::from_strs(&s[..Particle::len_strs()])?;
+        let flow_to = Particle::from_strs(&s[Particle::len_strs()..Particle::len_strs() * 2])?;
         let area = s[Particle::len_strs() * 2].parse()?;
         let drainage_area = s[Particle::len_strs() * 2 + 1].parse()?;
         let slope = s[Particle::len_strs() * 2 + 2].parse()?;

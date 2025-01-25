@@ -4,4 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+gtk4 = "0.9"
 worley-particle = { git = "https://github.com/TadaTeruki/worley-particle", features = ["particlemap"] }
+vislayers = { git = "https://github.com/TadaTeruki/vislayers" }
