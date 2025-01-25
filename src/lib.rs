@@ -9,29 +9,36 @@ struct InternalNode {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+pub struct DrainageBasinInput {
+    pub elevation: f64,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct DrainageBasinNode {
     pub area: f64,
     pub drainage_area: f64,
     pub flow_to: Particle,
 }
 
-pub fn build_drainage_basin(terrain_map: &ParticleMap<f64>) -> ParticleMap<DrainageBasinNode> {
+pub fn build_drainage_basin(
+    terrain_map: &ParticleMap<DrainageBasinInput>,
+) -> ParticleMap<DrainageBasinNode> {
     let nodes = terrain_map
         .iter()
-        .map(|(&particle, elevation)| {
+        .map(|(&particle, input)| {
             let voronoi = particle.calculate_voronoi();
             let area = voronoi.area();
             let mut flow_to = None;
             let mut steepest_slope = 0.0;
             let site = particle.site();
             for neighbor in voronoi.neighbors {
-                if let Some(neighbor_elevation) = terrain_map.get(&neighbor) {
-                    if neighbor_elevation > elevation {
+                if let Some(neighbor_input) = terrain_map.get(&neighbor) {
+                    if neighbor_input.elevation > input.elevation {
                         continue;
                     }
                     let neighbor_site = neighbor.site();
                     let distance = (site.0 - neighbor_site.0).hypot(site.1 - neighbor_site.1);
-                    let slope = (elevation - neighbor_elevation) / distance;
+                    let slope = (neighbor_input.elevation - input.elevation) / distance;
                     if flow_to.is_some() {
                         if slope > steepest_slope {
                             steepest_slope = slope;
