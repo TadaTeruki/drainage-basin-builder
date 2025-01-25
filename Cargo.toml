@@ -1,0 +1,7 @@
+[package]
+name = "watermap"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+worley-particle = { git = "https://github.com/TadaTeruki/worley-particle", features = ["particlemap"] }
