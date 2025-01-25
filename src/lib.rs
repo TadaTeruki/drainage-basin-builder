@@ -6,6 +6,7 @@ use worley_particle::{map::ParticleMap, Particle};
 struct InternalNode {
     area: f64,
     flow_to: Particle,
+    slope: f64,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -17,6 +18,7 @@ pub struct DrainageBasinInput {
 pub struct DrainageBasinNode {
     pub area: f64,
     pub drainage_area: f64,
+    pub slope: f64,
     pub flow_to: Particle,
 }
 
@@ -51,13 +53,21 @@ pub fn build_drainage_basin(
                 }
             }
             if let Some(flow_to) = flow_to {
-                (particle, InternalNode { area, flow_to })
+                (
+                    particle,
+                    InternalNode {
+                        area,
+                        flow_to,
+                        slope: steepest_slope,
+                    },
+                )
             } else {
                 (
                     particle,
                     InternalNode {
                         area,
                         flow_to: particle,
+                        slope: 0.0,
                     },
                 )
             }
@@ -124,6 +134,7 @@ pub fn build_drainage_basin(
                     area: node.area,
                     drainage_area: *drainage_area.get(particle)?,
                     flow_to: node.flow_to,
+                    slope: node.slope,
                 },
             ))
         })
