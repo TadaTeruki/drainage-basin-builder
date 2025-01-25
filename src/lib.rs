@@ -9,13 +9,13 @@ struct InternalNode {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct Node {
+pub struct DrainageBasinNode {
     pub area: f64,
     pub drainage_area: f64,
     pub flow_to: Particle,
 }
 
-pub fn build_drainage_basin(terrain_map: &ParticleMap<f64>) -> ParticleMap<Node> {
+pub fn build_drainage_basin(terrain_map: &ParticleMap<f64>) -> ParticleMap<DrainageBasinNode> {
     let nodes = terrain_map
         .iter()
         .map(|(&particle, elevation)| {
@@ -113,12 +113,12 @@ pub fn build_drainage_basin(terrain_map: &ParticleMap<f64>) -> ParticleMap<Node>
         .filter_map(|(particle, node)| {
             Some((
                 *particle,
-                Node {
+                DrainageBasinNode {
                     area: node.area,
                     drainage_area: *drainage_area.get(particle)?,
                     flow_to: node.flow_to,
                 },
             ))
         })
-        .collect::<ParticleMap<Node>>()
+        .collect::<ParticleMap<DrainageBasinNode>>()
 }
