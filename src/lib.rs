@@ -71,10 +71,10 @@ pub fn build_drainage_basin(terrain_map: &ParticleMap<f64>) -> ParticleMap<Drain
 
     for (origin_particle, _) in nodes.iter() {
         let mut current = *origin_particle;
+        if parent_num.contains_key(&current) {
+            continue;
+        }
         loop {
-            if parent_num.contains_key(&current) {
-                break;
-            }
             let current_area = nodes.get(&current).unwrap().area;
             drainage_area
                 .entry(current)
