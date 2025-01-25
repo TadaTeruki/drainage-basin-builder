@@ -1,6 +1,9 @@
 use std::collections::HashMap;
 
-use worley_particle::{map::ParticleMap, Particle};
+use worley_particle::{
+    map::{ParticleMap, ParticleMapAttributeRW},
+    Particle,
+};
 
 #[derive(Debug, Clone, PartialEq)]
 struct InternalNode {
@@ -21,6 +24,40 @@ pub struct DrainageBasinNode {
     pub drainage_area: f64,
     pub slope: f64,
     pub flow_to: Particle,
+}
+
+impl ParticleMapAttributeRW for DrainageBasinNode {
+    fn from_strs(s: &[&str]) -> Result<Self, Box<dyn std::error::Error>> {
+        let particle = Particle::from_strs(s)?;
+        let flow_to = Particle::from_strs(&s[Particle::len_strs()..])?;
+        let area = s[Particle::len_strs() * 2].parse()?;
+        let drainage_area = s[Particle::len_strs() * 2 + 1].parse()?;
+        let slope = s[Particle::len_strs() * 2 + 2].parse()?;
+
+        Ok(DrainageBasinNode {
+            particle,
+            area,
+            drainage_area,
+            slope,
+            flow_to,
+        })
+    }
+
+    fn to_strings(&self) -> Vec<String> {
+        let particle = self.particle.to_strings();
+        let flow_to = self.flow_to.to_strings();
+        let others = vec![
+            self.area.to_string(),
+            self.drainage_area.to_string(),
+            self.slope.to_string(),
+        ];
+
+        particle.into_iter().chain(flow_to).chain(others).collect()
+    }
+
+    fn len_strs() -> usize {
+        Particle::len_strs() + Particle::len_strs() + 3
+    }
 }
 
 impl DrainageBasinNode {
