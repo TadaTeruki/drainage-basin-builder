@@ -1,4 +1,4 @@
-use std::{collections::HashMap, i32};
+use std::collections::HashMap;
 
 use worley_particle::{map::ParticleMap, Particle};
 
@@ -10,9 +10,9 @@ struct InternalNode {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Node {
-    area: f64,
-    drainage_area: f64,
-    flow_to: Particle,
+    pub area: f64,
+    pub drainage_area: f64,
+    pub flow_to: Particle,
 }
 
 pub fn build_drainage_basin(terrain_map: &ParticleMap<f64>) -> ParticleMap<Node> {
@@ -32,7 +32,7 @@ pub fn build_drainage_basin(terrain_map: &ParticleMap<f64>) -> ParticleMap<Node>
                     let neighbor_site = neighbor.site();
                     let distance = (site.0 - neighbor_site.0).hypot(site.1 - neighbor_site.1);
                     let slope = (elevation - neighbor_elevation) / distance;
-                    if let Some(_) = flow_to {
+                    if flow_to.is_some() {
                         if slope > steepest_slope {
                             steepest_slope = slope;
                             flow_to = Some(neighbor);
@@ -61,59 +61,64 @@ pub fn build_drainage_basin(terrain_map: &ParticleMap<f64>) -> ParticleMap<Node>
 
     for (_, node) in nodes.iter() {
         let flow_to = node.flow_to;
-        if !parent_num.contains_key(&flow_to) {
-            parent_num.insert(flow_to, 1);
-        } else {
-            *parent_num.get_mut(&flow_to).unwrap() += 1;
-        }
+        parent_num
+            .entry(flow_to)
+            .and_modify(|e| *e += 1)
+            .or_insert(1);
     }
 
     let mut drainage_area = HashMap::new();
 
-    for (particle, node) in nodes.iter() {
-        if parent_num.contains_key(&particle) {
-            continue;
-        }
-        let mut particle = *particle;
+    for (origin_particle, _) in nodes.iter() {
+        let mut current = *origin_particle;
         loop {
+            if parent_num.contains_key(&current) {
+                break;
+            }
+            let current_area = nodes.get(&current).unwrap().area;
             drainage_area
-                .entry(particle)
+                .entry(current)
                 .and_modify(|e| {
-                    *e += node.area;
+                    *e += current_area;
                 })
-                .or_insert(node.area);
+                .or_insert(current_area);
 
-            if node.flow_to == particle {
+            let flow_to = nodes.get(&current).unwrap().flow_to;
+
+            if flow_to == current {
                 break;
             }
 
+            let current_drainage_area = *drainage_area.get(&current).unwrap();
+
             drainage_area
-                .entry(node.flow_to)
+                .entry(flow_to)
                 .and_modify(|e| {
-                    *e += node.area;
+                    *e += current_drainage_area;
                 })
-                .or_insert(node.area);
+                .or_insert(current_drainage_area);
 
-            particle = node.flow_to;
+            if *parent_num.get(&flow_to).unwrap() > 1 {
+                parent_num.entry(flow_to).and_modify(|e| *e -= 1);
 
-            if *parent_num.get(&particle).unwrap_or(&i32::MAX) > 1 {
-                parent_num.entry(particle).and_modify(|e| *e -= 1);
                 break;
             }
+
+            current = flow_to;
         }
     }
 
     nodes
         .iter()
-        .map(|(particle, node)| {
-            (
+        .filter_map(|(particle, node)| {
+            Some((
                 *particle,
                 Node {
                     area: node.area,
-                    drainage_area: *drainage_area.get(particle).unwrap(),
+                    drainage_area: *drainage_area.get(particle)?,
                     flow_to: node.flow_to,
                 },
-            )
+            ))
         })
         .collect::<ParticleMap<Node>>()
 }
