@@ -559,7 +559,7 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 [[package]]
 name = "worley-particle"
 version = "0.1.0"
-source = "git+https://github.com/TadaTeruki/worley-particle#72cb54b6a8ab7fa26fd517b3a05d32cd2a4cc68a"
+source = "git+https://github.com/TadaTeruki/worley-particle#5d7d6c318f444ec9378f171aafb1c55d64a8f24d"
 dependencies = [
  "contour",
  "prost",

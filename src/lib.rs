@@ -16,10 +16,23 @@ pub struct DrainageBasinInput {
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct DrainageBasinNode {
+    pub particle: Particle,
     pub area: f64,
     pub drainage_area: f64,
     pub slope: f64,
     pub flow_to: Particle,
+}
+
+impl DrainageBasinNode {
+    pub fn direction(&self) -> f64 {
+        let site_0 = self.particle.site();
+        let site_1 = self.flow_to.site();
+        (site_1.1 - site_0.1).atan2(site_1.0 - site_0.0)
+    }
+
+    pub fn river_width(&self, strength: f64) -> f64 {
+        self.drainage_area.sqrt() * strength
+    }
 }
 
 pub fn build_drainage_basin(
@@ -131,6 +144,7 @@ pub fn build_drainage_basin(
             Some((
                 *particle,
                 DrainageBasinNode {
+                    particle: *particle,
                     area: node.area,
                     drainage_area: *drainage_area.get(particle)?,
                     flow_to: node.flow_to,
