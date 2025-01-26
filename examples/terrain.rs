@@ -68,12 +68,12 @@ impl Layer for TerrainMap {
             for polygon in &threshold.polygons {
                 for (i, point) in polygon.iter().enumerate().step_by(bands_step) {
                     let x = rect.map_coord_x(
-                        point.0 - self.particle_map.params().get_scale() / 2.0,
+                        point.0 - self.particle_map.params().scale / 2.0,
                         0.0,
                         area_width as f64,
                     );
                     let y = rect.map_coord_y(
-                        point.1 - self.particle_map.params().get_scale() / 2.0,
+                        point.1 - self.particle_map.params().scale / 2.0,
                         0.0,
                         area_height as f64,
                     );
@@ -138,7 +138,7 @@ impl Layer for DrainageMapWrapped {
                 }
 
                 cr.set_line_width(
-                    river_width / focus_range.radius() / self.0.particle_map().params().get_scale(),
+                    river_width / focus_range.radius() / self.0.particle_map().params().scale,
                 );
                 cr.set_source_rgb(0.0, 0.0, 1.0);
                 cr.set_line_cap(gtk4::cairo::LineCap::Round);

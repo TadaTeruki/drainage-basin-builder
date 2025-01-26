@@ -44,7 +44,7 @@ impl DrainageMap {
     }
 
     pub fn river_ignoreable_width(&self) -> f64 {
-        self.river_ignoreable_width_strength * self.particle_map.params().get_scale()
+        self.river_ignoreable_width_strength * self.particle_map.params().scale
     }
 
     pub fn save_to_file(&self, file_path: &str) {
@@ -69,7 +69,7 @@ impl DrainageMap {
     }
 
     pub fn collides_with_river(&self, x: f64, y: f64) -> bool {
-        let radius = self.particle_map.params().get_scale() * 2.0;
+        let radius = self.particle_map.params().scale * 2.0;
         let binding = Particle::from_inside_radius(x, y, *self.particle_map.params(), radius);
         let particles = binding
             .iter()

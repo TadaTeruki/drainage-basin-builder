@@ -194,7 +194,7 @@ impl DrainageBasinNode {
     }
 
     pub fn river_width(&self, strength: f64) -> f64 {
-        self.drainage_area.sqrt() * strength * self.particle.params().get_scale()
+        self.drainage_area.sqrt() * strength * self.particle.params().scale
     }
 }
 
