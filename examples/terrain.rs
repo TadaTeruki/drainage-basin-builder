@@ -168,15 +168,14 @@ impl Layer for DrainageMapWrapped {
 }
 
 fn main() {
-    let terrain_map = TerrainMap::new("./data/in/11008264925851530191.particlemap", 0.0025);
+    let particlemap_id = "10459088313066128168";
+    let terrain_path = format!("./data/in/{}.particlemap", particlemap_id);
+    let terrain_map = TerrainMap::new(&terrain_path, 0.0025);
+    let drainage_path = format!("./data/out/drainage-{}.particlemap", particlemap_id);
     let drainage_map = DrainageMap::from_elevation_map(&terrain_map.particle_map, 1.0, 0.01);
-    drainage_map.save_to_file("./data/out/drainage-11008264925851530191.particlemap");
+    drainage_map.save_to_file(&drainage_path);
 
-    let drainage_map = DrainageMap::load_from_file(
-        "./data/out/drainage-11008264925851530191.particlemap",
-        1.0,
-        0.01,
-    );
+    let drainage_map = DrainageMap::load_from_file(&drainage_path, 1.0, 0.01);
 
     let mut visualizer = Visualizer::new(800, 600);
     visualizer.add_layer(Rc::new(RefCell::new(terrain_map)), 0);
