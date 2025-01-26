@@ -33,6 +33,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ace50bade8e6234aa140d9a2f552bbee1db4d353f69b8217bc503490fc1a9f26"
 
 [[package]]
+name = "bezier-rs"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bde3aa314326e2f984f81adcb399c64b93eed3c0f2cd4258b711bf494c5741de"
+dependencies = [
+ "glam",
+]
+
+[[package]]
 name = "bitflags"
 version = "2.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -105,16 +114,10 @@ dependencies = [
 name = "drainage-basin-builder"
 version = "0.1.0"
 dependencies = [
+ "bezier-rs",
+ "glam",
  "gtk4",
  "vislayers",
- "worley-particle",
-]
-
-[[package]]
-name = "drainage-basin-builder"
-version = "0.1.0"
-source = "git+https://github.com/TadaTeruki/drainage-basin-builder#17b84238ad37f3509adbb8c0ae50d77de35581b9"
-dependencies = [
  "worley-particle",
 ]
 
@@ -332,6 +335,15 @@ dependencies = [
  "libc",
  "system-deps",
  "windows-sys",
+]
+
+[[package]]
+name = "glam"
+version = "0.24.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b5418c17512bdf42730f9032c74e1ae39afc408745ebb2acf72fbc4691c17945"
+dependencies = [
+ "serde",
 ]
 
 [[package]]
@@ -993,9 +1005,8 @@ checksum = "852e951cb7832cb45cb1169900d19760cfa39b82bc0ea9c0e5a14ae88411c98b"
 [[package]]
 name = "vislayers"
 version = "0.1.0"
-source = "git+https://github.com/TadaTeruki/vislayers#a79be7c971e96a19f0cf55f453ebb8087ea51dfd"
+source = "git+https://github.com/TadaTeruki/vislayers#d5605be380475ba946a5191b570eed32c9e134ac"
 dependencies = [
- "drainage-basin-builder 0.1.0 (git+https://github.com/TadaTeruki/drainage-basin-builder)",
  "gtk4",
  "worley-particle",
 ]
