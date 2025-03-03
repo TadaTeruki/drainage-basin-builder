@@ -7,7 +7,10 @@ use vislayers::{
     geometry::FocusRange,
     window::{Layer, Visualizer},
 };
-use worley_particle::map::{Band, IDWStrategy, InterpolationMethod, ParticleMap};
+use worley_particle::map::{
+    lerp::{vertorization::Band, IDWStrategy, InterpolationMethod},
+    ParticleMap,
+};
 
 struct TerrainMap {
     particle_map: ParticleMap<f64>,

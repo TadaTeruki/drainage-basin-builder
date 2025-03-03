@@ -3,7 +3,7 @@ use std::{collections::HashMap, vec};
 use bezier_rs::{Bezier, BezierHandles, TValue};
 use glam::DVec2;
 use worley_particle::{
-    map::{ParticleMap, ParticleMapAttributeRW},
+    map::{rw::ParticleMapAttributeRW, ParticleMap},
     Particle,
 };
 
