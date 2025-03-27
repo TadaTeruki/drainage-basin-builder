@@ -1,7 +1,7 @@
 use std::{cell::RefCell, rc::Rc};
 
-use drainage_basin_builder::drainage::map::DrainageMap;
 use gtk4::{cairo::Context, prelude::WidgetExt, DrawingArea};
+use terrain_attributes_builder::drainage::map::DrainageMap;
 use vislayers::{
     colormap::SimpleColorMap,
     geometry::FocusRange,
