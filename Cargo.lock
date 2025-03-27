@@ -240,9 +240,9 @@ dependencies = [
 
 [[package]]
 name = "geo-types"
-version = "0.7.15"
+version = "0.7.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3bd1157f0f936bf0cd68dec91e8f7c311afe60295574d62b70d4861a1bfdf2d9"
+checksum = "62ddb1950450d67efee2bbc5e429c68d052a822de3aad010d28b351fbb705224"
 dependencies = [
  "approx",
  "num-traits",
@@ -502,9 +502,9 @@ checksum = "8355be11b20d696c8f18f6cc018c4e372165b1fa8126cef092399c9951984ffa"
 
 [[package]]
 name = "log"
-version = "0.4.26"
+version = "0.4.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30bde2b3dc3671ae49d8e2e9f044c7c005836e7a023ee57cffa25ab82764bb9e"
+checksum = "13dc2df351e3202783a1fe0d44375f7295ffb4049267b0f3018346dc122a1d94"
 
 [[package]]
 name = "memchr"
@@ -814,7 +814,7 @@ checksum = "852e951cb7832cb45cb1169900d19760cfa39b82bc0ea9c0e5a14ae88411c98b"
 [[package]]
 name = "vislayers"
 version = "0.1.0"
-source = "git+https://github.com/TadaTeruki/vislayers#94172a6f3d0869478ab727dd13ae3ad29d4b8d88"
+source = "git+https://github.com/TadaTeruki/vislayers#c2688f186d0938ae89ec2d7e24229e9d84a3c258"
 dependencies = [
  "gtk4",
  "worley-particle",
@@ -911,7 +911,7 @@ dependencies = [
 [[package]]
 name = "worley-particle"
 version = "0.1.0"
-source = "git+https://github.com/TadaTeruki/worley-particle#09008a35ab43dcb0a196d776516e445dd8d7d23d"
+source = "git+https://github.com/TadaTeruki/worley-particle#75a498deab898524f1df39cff4c72dd6c504daa9"
 dependencies = [
  "contour",
  "flatbuffers",
@@ -922,18 +922,18 @@ dependencies = [
 
 [[package]]
 name = "zerocopy"
-version = "0.8.23"
+version = "0.8.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd97444d05a4328b90e75e503a34bad781f14e28a823ad3557f0750df1ebcbc6"
+checksum = "2586fea28e186957ef732a5f8b3be2da217d65c5969d4b1e17f973ebbe876879"
 dependencies = [
  "zerocopy-derive",
 ]
 
 [[package]]
 name = "zerocopy-derive"
-version = "0.8.23"
+version = "0.8.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6352c01d0edd5db859a63e2605f4ea3183ddbd15e2c4a9e7d32184df75e4f154"
+checksum = "a996a8f63c5c4448cd959ac1bab0aaa3306ccfd060472f85943ee0750f0169be"
 dependencies = [
  "proc-macro2",
  "quote",

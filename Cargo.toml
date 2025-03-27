@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 gtk4 = "0.9"
-worley-particle = { git = "https://github.com/TadaTeruki/worley-particle", features = ["particlemap"] }
+worley-particle = { git = "https://github.com/TadaTeruki/worley-particle" }
 vislayers = { git = "https://github.com/TadaTeruki/vislayers" }
 bezier-rs = "0.4.0"
 glam = "0.24.2"
