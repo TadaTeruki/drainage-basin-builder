@@ -13,7 +13,7 @@ pub struct DrainageMap {
 }
 
 impl DrainageMap {
-    pub fn from_elevation_map(
+    pub fn new(
         elevation_map: &ParticleMap<f64>,
         river_strength: f64,
         river_ignoreable_width_strength: f64,
@@ -39,7 +39,7 @@ impl DrainageMap {
         }
     }
 
-    pub fn particle_map(&self) -> &ParticleMap<DrainageBasinNode> {
+    pub fn map(&self) -> &ParticleMap<DrainageBasinNode> {
         &self.particle_map
     }
 

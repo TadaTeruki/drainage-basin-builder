@@ -117,7 +117,7 @@ impl Layer for DrainageMapWrapped {
         let rect = focus_range.to_rect(area_width as f64, area_height as f64);
 
         if focus_range.radius() > 0.1 {
-            for (_, node) in self.0.particle_map().iter() {
+            for (_, node) in self.0.map().iter() {
                 let river_width = node.river_width(self.0.river_strength());
                 if river_width < self.0.river_ignoreable_width() {
                     continue;
@@ -140,9 +140,7 @@ impl Layer for DrainageMapWrapped {
                     cr.line_to(x1, y1);
                 }
 
-                cr.set_line_width(
-                    river_width / focus_range.radius() / self.0.particle_map().params().scale,
-                );
+                cr.set_line_width(river_width / focus_range.radius() / self.0.map().params().scale);
                 cr.set_source_rgb(0.0, 0.0, 1.0);
                 cr.set_line_cap(gtk4::cairo::LineCap::Round);
                 cr.stroke().expect("Failed to draw edge");
@@ -175,7 +173,7 @@ fn main() {
     let terrain_path = format!("./data/in/{}.particlemap", particlemap_id);
     let terrain_map = TerrainMap::new(&terrain_path, 0.0025);
     let drainage_path = format!("./data/out/drainage-{}.particlemap", particlemap_id);
-    let drainage_map = DrainageMap::from_elevation_map(&terrain_map.particle_map, 1.0, 0.01);
+    let drainage_map = DrainageMap::new(&terrain_map.particle_map, 1.0, 0.01);
     drainage_map.save_to_file(&drainage_path);
 
     let drainage_map = DrainageMap::load_from_file(&drainage_path, 1.0, 0.01);
