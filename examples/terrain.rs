@@ -1,6 +1,6 @@
 use std::{cell::RefCell, rc::Rc};
 
-use drainage_basin_builder::map::DrainageMap;
+use drainage_basin_builder::drainage::map::DrainageMap;
 use gtk4::{cairo::Context, prelude::WidgetExt, DrawingArea};
 use vislayers::{
     colormap::SimpleColorMap,
