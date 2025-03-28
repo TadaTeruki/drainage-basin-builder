@@ -814,7 +814,7 @@ checksum = "852e951cb7832cb45cb1169900d19760cfa39b82bc0ea9c0e5a14ae88411c98b"
 [[package]]
 name = "vislayers"
 version = "0.1.0"
-source = "git+https://github.com/TadaTeruki/vislayers#c2688f186d0938ae89ec2d7e24229e9d84a3c258"
+source = "git+https://github.com/TadaTeruki/vislayers#4621f4721bd575cb5ce9b841b532efb579964895"
 dependencies = [
  "gtk4",
  "worley-particle",
@@ -911,7 +911,7 @@ dependencies = [
 [[package]]
 name = "worley-particle"
 version = "0.1.0"
-source = "git+https://github.com/TadaTeruki/worley-particle#75a498deab898524f1df39cff4c72dd6c504daa9"
+source = "git+https://github.com/TadaTeruki/worley-particle#e1326ed87054f1975d14a5f7c32d9e11f3a6bd36"
 dependencies = [
  "contour",
  "flatbuffers",
