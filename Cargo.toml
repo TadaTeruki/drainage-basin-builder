@@ -3,9 +3,16 @@ name = "terrain-attributes-builder"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+visualize = [ "gtk4", "vislayers" ]
+
 [dependencies]
-gtk4 = "0.9"
 worley-particle = { git = "https://github.com/TadaTeruki/worley-particle" }
-vislayers = { git = "https://github.com/TadaTeruki/vislayers" }
 bezier-rs = "0.4.0"
 glam = "0.24.2"
+gtk4 = { version = "0.9", optional = true }
+vislayers = { git = "https://github.com/TadaTeruki/vislayers", optional = true }
+
+[dev-dependencies]
+gtk4 = "0.9"
+vislayers = { git = "https://github.com/TadaTeruki/vislayers" }

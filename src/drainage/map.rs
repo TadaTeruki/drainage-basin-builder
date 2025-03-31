@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-
 use worley_particle::{map::ParticleMap, Particle};
 
 use crate::drainage::node::Stream;
@@ -61,15 +60,14 @@ impl DrainageMap {
         file_path: &str,
         river_strength: f64,
         river_ignoreable_width_strength: f64,
-    ) -> Self {
-        let particle_map = ParticleMap::<DrainageBasinNode>::read_from_file(file_path)
-            .expect("Error reading drainage map");
+    ) -> Option<Self> {
+        let particle_map = ParticleMap::<DrainageBasinNode>::read_from_file(file_path).ok()?;
 
-        Self {
+        Some(Self {
             particle_map,
             river_strength,
             river_ignoreable_width_strength,
-        }
+        })
     }
 
     pub fn collides_with_river(&self, x: f64, y: f64) -> bool {
@@ -229,4 +227,73 @@ fn build_drainage_basin(
             ))
         })
         .collect::<ParticleMap<DrainageBasinNode>>()
+}
+
+#[cfg(feature = "visualize")]
+mod visualization {
+    use gtk4::{cairo::Context, prelude::WidgetExt, DrawingArea};
+    use vislayers::{geometry::FocusRange, window::Layer};
+
+    use super::DrainageMap;
+
+    impl Layer for DrainageMap {
+        fn draw(&self, drawing_area: &DrawingArea, cr: &Context, focus_range: &FocusRange) {
+            let area_width = drawing_area.width();
+            let area_height = drawing_area.height();
+
+            let rect = focus_range.to_rect(area_width as f64, area_height as f64);
+
+            if focus_range.radius() > 0.1 {
+                for (_, node) in self.map().iter() {
+                    let river_width = node.river_width(self.river_strength());
+                    if river_width < self.river_ignoreable_width() {
+                        continue;
+                    }
+                    let iter_num = (0.1 / focus_range.radius()).ceil() as usize;
+
+                    let point_0 = node.main_river.evaluate(0.0);
+                    let x0 = rect.map_coord_x(point_0.0, 0.0, area_width as f64);
+                    let y0 = rect.map_coord_y(point_0.1, 0.0, area_height as f64);
+
+                    cr.move_to(x0, y0);
+
+                    for i in 1..(iter_num + 1) {
+                        let t = i as f64 / iter_num as f64;
+
+                        let point_1 = node.main_river.evaluate(t);
+                        let x1 = rect.map_coord_x(point_1.0, 0.0, area_width as f64);
+                        let y1 = rect.map_coord_y(point_1.1, 0.0, area_height as f64);
+
+                        cr.line_to(x1, y1);
+                    }
+
+                    cr.set_line_width(
+                        river_width / focus_range.radius() / self.map().params().scale,
+                    );
+                    cr.set_source_rgb(0.0, 0.0, 1.0);
+                    cr.set_line_cap(gtk4::cairo::LineCap::Round);
+                    cr.stroke().expect("Failed to draw edge");
+                }
+            } else {
+                let img_width = drawing_area.width();
+                let img_height = drawing_area.height();
+
+                for iy in (0..img_height).step_by(6) {
+                    for ix in (0..img_width).step_by(6) {
+                        let prop_x = (ix as f64) / img_width as f64;
+                        let prop_y = (iy as f64) / img_height as f64;
+
+                        let x = rect.min_x + prop_x * rect.width();
+                        let y = rect.min_y + prop_y * rect.height();
+
+                        if self.collides_with_river(x, y) {
+                            cr.set_source_rgb(0.0, 0.0, 1.0);
+                            cr.rectangle(ix as f64 - 1.0, iy as f64 - 1.0, 3.0, 3.0);
+                            cr.fill().expect("Failed to fill rectangle");
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

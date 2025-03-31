@@ -32,6 +32,17 @@ impl FlatnessMap {
         Self { particle_map }
     }
 
+    pub fn save_to_file(&self, file_path: &str) {
+        self.particle_map
+            .write_to_file(file_path)
+            .expect("Error writing drainage map");
+    }
+
+    pub fn load_from_file(file_path: &str) -> Option<Self> {
+        let particle_map = ParticleMap::<f64>::read_from_file(file_path).ok()?;
+        Some(Self { particle_map })
+    }
+
     pub fn map(&self) -> &ParticleMap<f64> {
         &self.particle_map
     }
@@ -82,4 +93,43 @@ fn build_flatness_map(
     }
 
     flatness_map
+}
+
+#[cfg(feature = "visualize")]
+mod visualization {
+    use gtk4::{cairo::Context, prelude::WidgetExt, DrawingArea};
+    use vislayers::{geometry::FocusRange, window::Layer};
+
+    use super::FlatnessMap;
+
+    impl Layer for FlatnessMap {
+        fn draw(&self, drawing_area: &DrawingArea, ctx: &Context, focus_range: &FocusRange) {
+            let area_width = drawing_area.width();
+            let area_height = drawing_area.height();
+
+            let rect = focus_range.to_rect(area_width as f64, area_height as f64);
+
+            for (particle, flatness) in self.particle_map.iter() {
+                let color = [1.0, 0.5, 0.0];
+
+                ctx.set_source_rgba(color[0], color[1], color[2], *flatness);
+
+                let polygon = particle.calculate_voronoi().polygon;
+
+                ctx.new_path();
+                for (i, point) in polygon.iter().enumerate() {
+                    let x = rect.map_coord_x(point.0, 0.0, area_width as f64);
+                    let y = rect.map_coord_y(point.1, 0.0, area_height as f64);
+
+                    if i == 0 {
+                        ctx.move_to(x, y);
+                    } else {
+                        ctx.line_to(x, y);
+                    }
+                }
+
+                ctx.fill().expect("Failed to draw place");
+            }
+        }
+    }
 }

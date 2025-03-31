@@ -1,7 +1,7 @@
 use std::{cell::RefCell, rc::Rc};
 
 use gtk4::{cairo::Context, prelude::WidgetExt, DrawingArea};
-use terrain_attributes_builder::drainage::map::DrainageMap;
+use terrain_attributes_builder::{drainage::map::DrainageMap, flatness::FlatnessMap};
 use vislayers::{
     colormap::SimpleColorMap,
     geometry::FocusRange,
@@ -107,65 +107,12 @@ impl Layer for TerrainMap {
     }
 }
 
-struct DrainageMapWrapped(DrainageMap);
-
-impl Layer for DrainageMapWrapped {
-    fn draw(&self, drawing_area: &DrawingArea, cr: &Context, focus_range: &FocusRange) {
-        let area_width = drawing_area.width();
-        let area_height = drawing_area.height();
-
-        let rect = focus_range.to_rect(area_width as f64, area_height as f64);
-
-        if focus_range.radius() > 0.1 {
-            for (_, node) in self.0.map().iter() {
-                let river_width = node.river_width(self.0.river_strength());
-                if river_width < self.0.river_ignoreable_width() {
-                    continue;
-                }
-                let iter_num = (0.1 / focus_range.radius()).ceil() as usize;
-
-                let point_0 = node.main_river.evaluate(0.0);
-                let x0 = rect.map_coord_x(point_0.0, 0.0, area_width as f64);
-                let y0 = rect.map_coord_y(point_0.1, 0.0, area_height as f64);
-
-                cr.move_to(x0, y0);
-
-                for i in 1..(iter_num + 1) {
-                    let t = i as f64 / iter_num as f64;
-
-                    let point_1 = node.main_river.evaluate(t);
-                    let x1 = rect.map_coord_x(point_1.0, 0.0, area_width as f64);
-                    let y1 = rect.map_coord_y(point_1.1, 0.0, area_height as f64);
-
-                    cr.line_to(x1, y1);
-                }
-
-                cr.set_line_width(river_width / focus_range.radius() / self.0.map().params().scale);
-                cr.set_source_rgb(0.0, 0.0, 1.0);
-                cr.set_line_cap(gtk4::cairo::LineCap::Round);
-                cr.stroke().expect("Failed to draw edge");
-            }
-        } else {
-            let img_width = drawing_area.width();
-            let img_height = drawing_area.height();
-
-            for iy in (0..img_height).step_by(6) {
-                for ix in (0..img_width).step_by(6) {
-                    let prop_x = (ix as f64) / img_width as f64;
-                    let prop_y = (iy as f64) / img_height as f64;
-
-                    let x = rect.min_x + prop_x * rect.width();
-                    let y = rect.min_y + prop_y * rect.height();
-
-                    if self.0.collides_with_river(x, y) {
-                        cr.set_source_rgb(0.0, 0.0, 1.0);
-                        cr.rectangle(ix as f64 - 1.0, iy as f64 - 1.0, 3.0, 3.0);
-                        cr.fill().expect("Failed to fill rectangle");
-                    }
-                }
-            }
-        }
+fn gradient_to_flatness(gradient: f64) -> Option<f64> {
+    let flatness = 1.0 - gradient.abs() / 5.0;
+    if flatness < 0.0 {
+        return None;
     }
+    Some(flatness.sqrt())
 }
 
 fn main() {
@@ -175,11 +122,16 @@ fn main() {
     let drainage_path = format!("./data/out/drainage-{}.particlemap", particlemap_id);
     let drainage_map = DrainageMap::new(&terrain_map.particle_map, 1.0, 0.01);
     drainage_map.save_to_file(&drainage_path);
-
-    let drainage_map = DrainageMap::load_from_file(&drainage_path, 1.0, 0.01);
+    let drainage_map = DrainageMap::load_from_file(&drainage_path, 1.0, 0.01).unwrap();
+    //elevation_map, minimum_neighbor_num, sea_level, gradient_to_flatness
+    let flatness_map = FlatnessMap::new(&terrain_map.particle_map, 1, 1e-3, gradient_to_flatness);
+    let flatness_path = format!("./data/out/flatness-{}.particlemap", particlemap_id);
+    flatness_map.save_to_file(&flatness_path);
+    let flatness_map = FlatnessMap::load_from_file(&flatness_path).unwrap();
 
     let mut visualizer = Visualizer::new(800, 600);
     visualizer.add_layer(Rc::new(RefCell::new(terrain_map)), 0);
-    visualizer.add_layer(Rc::new(RefCell::new(DrainageMapWrapped(drainage_map))), 1);
+    visualizer.add_layer(Rc::new(RefCell::new(drainage_map)), 1);
+    visualizer.add_layer(Rc::new(RefCell::new(flatness_map)), 2);
     visualizer.run();
 }
